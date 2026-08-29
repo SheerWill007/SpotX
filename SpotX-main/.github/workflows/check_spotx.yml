@@ -1,0 +1,65 @@
+name: Check Spotx for the latest Spotify
+run-name: Check SpotX for Spotify ${{ inputs.version || 'latest' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Spotify version like 1.2.95 or 1.2.95.453, empty means latest
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Run Spotx
+      shell: powershell
+      env:
+        SPOTIFY_VERSION: ${{ inputs.version }}
+      run: |
+        $spotifyVersion = ([string]$env:SPOTIFY_VERSION).Trim()
+
+        if ([string]::IsNullOrWhiteSpace($spotifyVersion)) {
+          $jsonUrl = "https://raw.githubusercontent.com/LoaderSpot/table/refs/heads/main/table/versions.json"
+          $resp = Invoke-RestMethod -Uri $jsonUrl
+
+          # Use fullversion for the installer name
+          $latestEntry = $resp.PSObject.Properties | Select-Object -First 1
+          if (-not $latestEntry) {
+            throw "No Spotify versions found in $jsonUrl"
+          }
+
+          $spotifyVersion = [string]$latestEntry.Value.fullversion
+          if ([string]::IsNullOrWhiteSpace($spotifyVersion) -or $spotifyVersion -notmatch '^\d+\.\d+\.\d+\.\d+\.g[0-9a-f]{8}$') {
+            throw "Invalid Spotify fullversion for $($latestEntry.Name)"
+          }
+        }
+        elseif ($spotifyVersion -notmatch '^\d+\.\d+\.\d+(?:\.\d+)?$') {
+          throw "Invalid Spotify version: $spotifyVersion"
+        }
+
+        Write-Host "Selected Spotify version: $spotifyVersion"
+        
+        # Incoming parameters
+        $parameters = @{
+          Verbose = $true
+          new_theme = $true
+          version = $spotifyVersion
+          confirm_spoti_recomended_over = $true
+          cache_limit = 1000
+          block_update_on = $true
+          lyrics_stat = "spotify"
+          urlform_goofy = "https://docs.google.com/forms/formResponse"
+          idbox_goofy = "9999999"
+          podcasts_off = $true
+          adsections_off = $true
+          lyrics_block = $true
+        }
+        
+        # Run Spotx
+        $spotxUrl = "https://raw.githubusercontent.com/SpotX-Official/SpotX/refs/heads/main/run.ps1"
+        $spotxScript = [scriptblock]::Create((Invoke-WebRequest -UseBasicParsing -Uri $spotxUrl).Content)
+        & $spotxScript @parameters
