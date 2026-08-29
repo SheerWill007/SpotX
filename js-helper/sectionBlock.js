@@ -1,5 +1,20 @@
 const API_PATHFINDER = 'api-partner.spotify.com/pathfinder';
 const API_RECOMMENDATIONS = 'api.spotify.com/v1/views/personalized-recommendations';
+const API_AI_RECOMMENDATIONS = 'api.spotify.com/v1/views/ai-recommendations';
+const API_PROMPTED_PLAYLISTS = 'api.spotify.com/v1/views/prompted-playlists';
+const API_AUDIOBOOKS = 'api.spotify.com/v1/audiobooks/recommendations';
+const API_ADS = 'spclient.wg.spotify.com/ads/';
+const API_AD_LOGIC = 'spclient.wg.spotify.com/ad-logic/';
+
+const BLOCKED_APIS = [
+    API_PATHFINDER,
+    API_RECOMMENDATIONS,
+    API_AI_RECOMMENDATIONS,
+    API_PROMPTED_PLAYLISTS,
+    API_AUDIOBOOKS,
+    API_ADS,
+    API_AD_LOGIC
+];
 
 const BLOCKED_SECTIONS_BY_CATEGORY = {
     'Party': [
@@ -91,6 +106,20 @@ const BLOCKED_SECTIONS_BY_CATEGORY = {
     'Unknown': [
         '0JQ5IMCbQBLqTJyy28YCa9',
         '0JQ5DAnM3wGh0gz1MXnu7R'
+    ],
+    'AI Generated Playlists': [
+        '0JQ5IMCbQBLaiPromptedYou'
+    ],
+    'Audiobook Recommendations': [
+        '0JQ5IMCbQBLaiAudiobookRec',
+        '0JQ5DAnM3wGh0gz1MXnuABK'
+    ],
+    'Premium Upsells': [
+        '0JQ5IMCbQBLaiPremiumUpsell',
+        '0JQ5DAnM3wGh0gz1MXnuHiFi'
+    ],
+    'Studio by Spotify': [
+        '0JQ5IMCbQBLaiStudioSpotify'
     ]
 };
 
@@ -101,7 +130,7 @@ for (const [category, ids] of Object.entries(BLOCKED_SECTIONS_BY_CATEGORY)) {
     }
 }
 
-const BLOCKED_CONTENT_TYPES = new Set(['Podcast', 'Audiobook', 'Episode']);
+const BLOCKED_CONTENT_TYPES = new Set(['Podcast', 'Audiobook', 'Episode', 'AIGeneratedPlaylist', 'PromptedContent', 'StudioContent', 'PremiumUpsell', 'AdContent']);
 
 const createSectionAdapter = (isPersonalizedRecommendations) => {
     if (isPersonalizedRecommendations) {
@@ -317,10 +346,20 @@ window.fetch = async function (...args) {
     const [url] = args;
     const urlString = typeof url === 'string' ? url : url?.url || '';
 
-    const isPathfinderUrl = urlString.includes(API_PATHFINDER);
-    const isPersonalizedRecommendationsUrl = urlString.includes(API_RECOMMENDATIONS);
+    // Check if URL should be intercepted
+    const shouldIntercept = BLOCKED_APIS.some(api => urlString.includes(api));
+    
+    // Block ad-related APIs completely
+    if (urlString.includes(API_ADS) || urlString.includes(API_AD_LOGIC)) {
+        console.log('[SectionBlock] Blocked ad API call:', urlString);
+        return new Response(JSON.stringify({ data: null }), {
+            status: 200,
+            statusText: 'OK',
+            headers: { 'Content-Type': 'application/json' }
+        });
+    }
 
-    if (!isPathfinderUrl && !isPersonalizedRecommendationsUrl) {
+    if (!shouldIntercept) {
         return originalFetch.apply(this, args);
     }
 
@@ -330,8 +369,10 @@ window.fetch = async function (...args) {
     try {
         const data = await response.json();
 
-        const shouldModify = (isPathfinderUrl && data?.data?.home) ||
-            (isPersonalizedRecommendationsUrl && data?.content);
+        const shouldModify = (urlString.includes(API_PATHFINDER) && data?.data?.home) ||
+            (urlString.includes(API_RECOMMENDATIONS) && data?.content) ||
+            (urlString.includes(API_AI_RECOMMENDATIONS) && data?.content) ||
+            (urlString.includes(API_PROMPTED_PLAYLISTS) && data?.content);
 
         if (!shouldModify) {
             return clonedResponse;

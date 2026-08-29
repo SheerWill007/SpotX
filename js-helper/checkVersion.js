@@ -3,7 +3,7 @@
   window.oneTime = true;
 
   const WORKER_BASE_URL = "https://spotify-ingest-admin.amd64fox1.workers.dev";
-  const SCRIPT_VERSION = "1.2.1";
+  const SCRIPT_VERSION = "1.2.2";
 
   const SOURCE_LABELS = {
     REMOTE: "latest.json",
@@ -56,6 +56,8 @@
         : [
           "https://raw.githubusercontent.com/LoaderSpot/table/refs/heads/main/latest.json",
           "https://raw.githack.com/LoaderSpot/table/main/latest.json",
+          "https://loadspot.vercel.app/api/latest",
+          "https://spotify-version-api.amd64fox1.workers.dev/latest",
           `${WORKER_BASE_URL}/api/client/latest`
         ],
     updateUrl: "https://spclient.wg.spotify.com/desktop-update/v2/update",
@@ -66,7 +68,9 @@
     desktopUpdateTimeoutMs: 8000,
     desktopUpdateMaxRetries: 1,
     tokenCaptureMaxAttempts: 5,
-    tokenCaptureTimeoutMs: 30000
+    tokenCaptureTimeoutMs: 30000,
+    minSupportedVersion: "1.2.0.0",
+    maxTestedVersion: "1.2.97.0"
   };
 
   const originalFetch = window.fetch;
@@ -83,6 +87,39 @@
 
   function extractShortVersion(value) {
     return String(value || "").match(/(\d+\.\d+\.\d+\.\d+)/)?.[1] || "";
+  }
+
+  function validateVersionCompatibility(shortVersion) {
+    const version = extractShortVersion(shortVersion);
+    const minVersion = CONFIG.minSupportedVersion;
+    const maxVersion = CONFIG.maxTestedVersion;
+    
+    const current = version.split('.').map(Number);
+    const min = minVersion.split('.').map(Number);
+    const max = maxVersion.split('.').map(Number);
+    
+    function compareVersions(v1, v2) {
+      for (let i = 0; i < 4; i++) {
+        if (v1[i] > v2[i]) return 1;
+        if (v1[i] < v2[i]) return -1;
+      }
+      return 0;
+    }
+    
+    const isAboveMin = compareVersions(current, min) >= 0;
+    const isBelowMax = compareVersions(current, max) <= 0;
+    
+    if (!isAboveMin) {
+      console.warn(`[SpotX] Version ${version} is below minimum supported version ${minVersion}`);
+      return { supported: false, reason: 'too_old' };
+    }
+    
+    if (!isBelowMax) {
+      console.warn(`[SpotX] Version ${version} is above maximum tested version ${maxVersion} - some features may not work correctly`);
+      return { supported: true, reason: 'untested', warning: true };
+    }
+    
+    return { supported: true, reason: 'compatible' };
   }
 
   function readVersionSourceSnapshot() {

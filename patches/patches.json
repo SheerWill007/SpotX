@@ -51,10 +51,42 @@
         "downloadquality": {
             "version": {
                 "fr": "1.1.70",
-                "to": "1.2.29"
+                "to": ""
             },
             "match": "(\\(.,..jsxs\\)\\(.{1,3}|(.\\(\\).|..)createElement\\(.{1,4}),{(filterMatchQuery|filter:.,title|(variant:\"viola\",semanticColor:\"textSubdued\"|..:\"span\",variant:.{3,6}mesto,color:.{3,6}),htmlFor:\"desktop.settings.downloadQuality.+?).{1,6}get\\(\"desktop.settings.downloadQuality.title.+?(children:.{1,2}\\(.,.\\).+?,|\\(.,.\\){3,4},|,.\\)}},.\\(.,.\\)\\),)",
             "replace": ""
+        },
+        "htmlads": {
+            "version": {
+                "fr": "1.2.94",
+                "to": ""
+            },
+            "match": "(enableHtmlDisplayAds|renderHtmlAd|htmlAdContent):[!01]",
+            "replace": "$1:!1"
+        },
+        "harmonyvideoad": {
+            "version": {
+                "fr": "1.2.96",
+                "to": ""
+            },
+            "match": "(HarmonyVideoAdPlayer|HptoHarmonyVideo)",
+            "replace": ""
+        },
+        "horizontalvideoad": {
+            "version": {
+                "fr": "1.2.95",
+                "to": ""
+            },
+            "match": "(sponsoredPlaylistHorizontalVideo|horizontalVideoAd)",
+            "replace": ""
+        },
+        "losslessquality": {
+            "version": {
+                "fr": "1.2.80",
+                "to": ""
+            },
+            "match": "\"very_high\"===(.)|\"high\"===(.)",
+            "replace": "\"lossless\"===$1||\"very_high\"===$1||\"high\"===$2"
         }
     },
     "others": {
@@ -512,7 +544,7 @@
                 "native_description": "Enables the Employee Flag to send to Sentry",
                 "version": {
                     "fr": "1.2.44",
-                    "to": "1.2.93"
+                    "to": ""
                 }
             },
             "HomeImpressions": {
@@ -611,7 +643,7 @@
                 "native_description": "Enable embedded display ads on NPV",
                 "version": {
                     "fr": "1.2.57",
-                    "to": "1.2.77"
+                    "to": ""
                 }
             },
             "EnhancedAdsClientDeconfliction": {
@@ -778,7 +810,7 @@
                 "name": "bypassApplyUpdateCheck",
                 "version": {
                     "fr": "1.2.84",
-                    "to": "1.2.93"
+                    "to": ""
                 }
             },
             "ad_feedback_in_stream": {
@@ -891,6 +923,51 @@
                 "version": {
                     "fr": "1.2.96",
                     "to": ""
+                }
+            },
+            "ExclusiveAudioOutput": {
+                "name": "enableExclusiveAudioOutput",
+                "description": "Disable exclusive mode and audio device selection (may interfere with SpotX)",
+                "native_description": "Enable Exclusive Mode for bit-perfect playback",
+                "version": {
+                    "fr": "1.2.85",
+                    "to": ""
+                }
+            },
+            "LimitedAdsLabelsOnPlaylistCards": {
+                "name": "enableLimitedAdsLabelsOnPlaylistCards",
+                "description": "Disable Limited Ads labels on playlist cards",
+                "native_description": "Enables Limited Ads label rendering on playlist cards across Home, Browse, and Recents surfaces",
+                "version": {
+                    "fr": "1.2.86",
+                    "to": ""
+                }
+            },
+            "LimitedAdsLabelsOnSearch": {
+                "name": "enableLimitedAdsLabelsOnSearch",
+                "description": "Disable Limited Ads labels on search",
+                "native_description": "Enables Limited Ads label rendering on Search surfaces",
+                "version": {
+                    "fr": "1.2.86",
+                    "to": ""
+                }
+            },
+            "AdFeedbackMilestone1": {
+                "name": "enable_ad_feedback_milestone_1",
+                "description": "Disable ad feedback milestone 1",
+                "native_description": "Enable ad feedback milestone 1 feature",
+                "version": {
+                    "fr": "1.2.86",
+                    "to": ""
+                }
+            },
+            "LeaderboardCrossOriginIframe": {
+                "name": "enableLeaderboardCrossOriginIframe",
+                "description": "Disable leaderboard cross-origin iframe ads",
+                "native_description": "Enables cross-origin iframe rendering for leaderboard ads via CDN template",
+                "version": {
+                    "fr": "1.2.86",
+                    "to": "1.2.90"
                 }
             }
         },
@@ -1018,7 +1095,7 @@
                 "native_description": "Enable silence trimming in podcasts",
                 "version": {
                     "fr": "1.1.99",
-                    "to": "1.2.93"
+                    "to": ""
                 }
             },
             "PlaybackSpeedIncrements": {
@@ -1162,7 +1239,7 @@
                 "native_description": "Enable Smart Shuffle",
                 "version": {
                     "fr": "1.2.22",
-                    "to": "1.2.96"
+                    "to": ""
                 }
             },
             "ConcertsTicketPrice": {
@@ -1702,7 +1779,61 @@
                 "native_description": "Enable improved cinema mode",
                 "version": {
                     "fr": "1.2.50",
-                    "to": "1.2.62"
+                    "to": ""
+                }
+            },
+            "OfflineLyrics": {
+                "name": "enableOfflineLyrics",
+                "description": "Enable offline lyrics viewing without internet",
+                "native_description": "Enable offline lyrics",
+                "version": {
+                    "fr": "1.2.93",
+                    "to": ""
+                }
+            },
+            "LyricsTranslation": {
+                "name": "enableLyricsTranslation",
+                "description": "Enable lyrics translation to user language",
+                "native_description": "Enable lyrics translation",
+                "version": {
+                    "fr": "1.2.93",
+                    "to": ""
+                }
+            },
+            "LyricsPreviews": {
+                "name": "enableLyricsPreviews",
+                "description": "Enable lyrics previews in UI",
+                "native_description": "Enable lyrics preview cards",
+                "version": {
+                    "fr": "1.2.93",
+                    "to": ""
+                }
+            },
+            "PromptedPlaylist": {
+                "name": "enablePromptedPlaylist",
+                "description": "Enable AI-powered playlist creation from text prompts",
+                "native_description": "Enable prompted playlist generation",
+                "version": {
+                    "fr": "1.2.90",
+                    "to": ""
+                }
+            },
+            "PromptedPlaylistPodcasts": {
+                "name": "enablePromptedPlaylistPodcasts",
+                "description": "Enable AI playlist prompts for podcasts",
+                "native_description": "Expand prompted playlist to podcasts",
+                "version": {
+                    "fr": "1.2.92",
+                    "to": ""
+                }
+            },
+            "LosslessAudioCodec": {
+                "name": "enableLosslessAudio",
+                "description": "Enable lossless audio codec support",
+                "native_description": "Enable lossless audio playback",
+                "version": {
+                    "fr": "1.2.80",
+                    "to": ""
                 }
             },
             "ImprovedCinemaModeCanvas": {

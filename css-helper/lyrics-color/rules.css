@@ -137,3 +137,108 @@ body .KDhLFoEqoClhH12bsfrS {
     --transcript-color-text: var(--next) !important;
     --transcript-color-highlightText: var(--current) !important;
 }
+
+
+/* Enhanced Lyrics Support - 2026 Features */
+
+/* Translated lyrics styling */
+.lyrics-translated-text {
+    color: var(--lyrics-color-primary, #ffffff);
+    font-style: italic;
+    opacity: 0.95;
+}
+
+.lyrics-original-text {
+    color: var(--lyrics-color-primary, #ffffff);
+    opacity: 1;
+}
+
+/* Lyrics preview cards */
+.lyrics-preview-card {
+    background-color: var(--lyrics-bg-color, rgba(0, 0, 0, 0.7));
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 8px 0;
+}
+
+.lyrics-preview-card:hover {
+    background-color: var(--lyrics-bg-color-hover, rgba(0, 0, 0, 0.8));
+}
+
+/* Offline lyrics indicator */
+.lyrics-offline-badge {
+    color: var(--lyrics-color-secondary, #b3b3b3);
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.lyrics-offline-badge::before {
+    content: "📥";
+    font-size: 14px;
+}
+
+/* Translation toggle button */
+.lyrics-translation-toggle {
+    background-color: var(--lyrics-button-bg, rgba(255, 255, 255, 0.1));
+    color: var(--lyrics-color-primary, #ffffff);
+    border: 1px solid var(--lyrics-button-border, rgba(255, 255, 255, 0.2));
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lyrics-translation-toggle:hover {
+    background-color: var(--lyrics-button-bg-hover, rgba(255, 255, 255, 0.2));
+}
+
+.lyrics-translation-toggle.active {
+    background-color: var(--lyrics-color-accent, #1db954);
+    border-color: var(--lyrics-color-accent, #1db954);
+}
+
+/* Lyrics language selector */
+.lyrics-language-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.lyrics-language-option {
+    background-color: var(--lyrics-button-bg, rgba(255, 255, 255, 0.1));
+    color: var(--lyrics-color-secondary, #b3b3b3);
+    border: none;
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lyrics-language-option:hover {
+    background-color: var(--lyrics-button-bg-hover, rgba(255, 255, 255, 0.15));
+    color: var(--lyrics-color-primary, #ffffff);
+}
+
+.lyrics-language-option.selected {
+    background-color: var(--lyrics-color-accent, #1db954);
+    color: #000000;
+}
+
+/* Ensure compatibility with right sidebar lyrics */
+.lyrics-sidebar-container .lyrics-translated-text,
+.lyrics-sidebar-container .lyrics-original-text,
+.lyrics-sidebar-container .lyrics-preview-card {
+    width: 100%;
+}
+
+/* Ensure compatibility with fullscreen lyrics */
+.lyrics-fullscreen-container .lyrics-preview-card {
+    max-width: 800px;
+    margin: 16px auto;
+}

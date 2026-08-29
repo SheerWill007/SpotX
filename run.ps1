@@ -144,7 +144,25 @@ param
 
     # Deprecated parameters
     [Parameter(HelpMessage = 'Deprecated, old lyrics are enabled by default')]
-    [switch]$old_lyrics
+    [switch]$old_lyrics,
+
+    [Parameter(HelpMessage = 'Preserve Exclusive Mode audio settings')]
+    [switch]$preserve_exclusive_mode,
+
+    [Parameter(HelpMessage = 'Enable AI-powered features (Prompted Playlists)')]
+    [switch]$enable_ai_features,
+
+    [Parameter(HelpMessage = 'Enable enhanced lyrics (offline, translation, previews)')]
+    [switch]$enable_enhanced_lyrics,
+
+    [Parameter(HelpMessage = 'Test mode - validate patches without installing')]
+    [switch]$test_mode,
+
+    [Parameter(HelpMessage = 'Generate compatibility report')]
+    [switch]$compatibility_report,
+
+    [Parameter(HelpMessage = 'Skip experimental features (minimal installation)')]
+    [switch]$minimal_install
 )
 
 # Ignore errors from `Stop-Process`
@@ -432,6 +450,131 @@ $langCode = Format-LanguageCode -LanguageCode $Language
 
 $lang = CallLang -clg $langCode
 
+# New SpotX 2026 Features Functions
+
+function Get-SpotifyFeatures {
+    param(
+        [string]$SpotifyVersion
+    )
+    
+    $features = @{
+        'exclusive_mode' = $false
+        'lossless_audio' = $false
+        'offline_lyrics' = $false
+        'lyrics_translation' = $false
+        'ai_playlists' = $false
+        'studio_app' = $false
+    }
+    
+    $ver = [version]($SpotifyVersion -replace '\.g[0-9a-f]{8}$', '')
+    
+    # Exclusive Mode added in 1.2.85
+    if ($ver -ge [version]'1.2.85') {
+        $features.exclusive_mode = $true
+    }
+    
+    # Lossless added in 1.2.80
+    if ($ver -ge [version]'1.2.80') {
+        $features.lossless_audio = $true
+    }
+    
+    # Enhanced lyrics added in 1.2.93
+    if ($ver -ge [version]'1.2.93') {
+        $features.offline_lyrics = $true
+        $features.lyrics_translation = $true
+    }
+    
+    # AI playlists added in 1.2.90
+    if ($ver -ge [version]'1.2.90') {
+        $features.ai_playlists = $true
+    }
+    
+    return $features
+}
+
+function Show-CompatibilityReport {
+    param(
+        [string]$SpotifyVersion,
+        [string]$PatchesPath
+    )
+    
+    Write-Host "`n========================================" -ForegroundColor Cyan
+    Write-Host "   SpotX Compatibility Report" -ForegroundColor Cyan
+    Write-Host "========================================`n" -ForegroundColor Cyan
+    
+    Write-Host "Spotify Version: $SpotifyVersion"
+    
+    $features = Get-SpotifyFeatures -SpotifyVersion $SpotifyVersion
+    
+    Write-Host "`nOfficial Spotify Features:" -ForegroundColor Yellow
+    foreach ($feature in $features.Keys) {
+        $status = if ($features[$feature]) { "✓" } else { "✗" }
+        $color = if ($features[$feature]) { "Green" } else { "Gray" }
+        $name = ($feature -replace '_', ' ').ToUpper()
+        Write-Host "  $status $name" -ForegroundColor $color
+    }
+    
+    # Load patches and count compatibility
+    if (Test-Path $PatchesPath) {
+        $patches = Get-Content $PatchesPath -Raw | ConvertFrom-Json
+        $ver = [version]($SpotifyVersion -replace '\.g[0-9a-f]{8}$', '')
+        
+        $totalPatches = 0
+        $compatiblePatches = 0
+        
+        foreach ($category in $patches.PSObject.Properties) {
+            foreach ($patchGroup in $category.Value.PSObject.Properties) {
+                foreach ($patch in $patchGroup.Value.PSObject.Properties) {
+                    $totalPatches++
+                    
+                    if ($patch.Value.version) {
+                        $frVer = [version]($patch.Value.version.fr -replace '\.g[0-9a-f]{8}$', '')
+                        $toVer = if ($patch.Value.version.to -eq "") { [version]"99.0.0.0" } 
+                                 else { [version]($patch.Value.version.to -replace '\.g[0-9a-f]{8}$', '') }
+                        
+                        if (($ver -ge $frVer) -and ($ver -le $toVer)) {
+                            $compatiblePatches++
+                        }
+                    }
+                    else {
+                        $compatiblePatches++
+                    }
+                }
+            }
+        }
+        
+        $percentage = [math]::Round(($compatiblePatches / $totalPatches) * 100, 2)
+        
+        Write-Host "`nPatch Compatibility:" -ForegroundColor Yellow
+        Write-Host "  Compatible: $compatiblePatches / $totalPatches patches"
+        Write-Host "  Coverage: $percentage%" -ForegroundColor $(
+            if($percentage -ge 95){'Green'}
+            elseif($percentage -ge 80){'Yellow'}
+            else{'Red'}
+        )
+        
+        if ($percentage -lt 80) {
+            Write-Warning "Low patch compatibility! Some features may not work correctly."
+        }
+    }
+    
+    Write-Host "`n========================================`n" -ForegroundColor Cyan
+}
+
+function Test-StudioBySpotify {
+    $studioPath = Join-Path $env:LOCALAPPDATA 'SpotifyStudio'
+    $studioExe = Join-Path $studioPath 'SpotifyStudio.exe'
+    
+    if (Test-Path $studioExe) {
+        Write-Host "Spotify Studio detected at: $studioExe" -ForegroundColor Yellow
+        Write-Host "Note: SpotX does not modify Studio by Spotify Labs (separate app)" -ForegroundColor Yellow
+        return $true
+    }
+    return $false
+}
+
+$lang = CallLang -clg $langCode
+
 Write-Host ($lang).Welcome
 Write-Host
 
@@ -443,6 +586,41 @@ if ($old_lyrics) {
 "@
     Write-Host
 }
+
+# Handle new 2026 parameters
+if ($compatibility_report) {
+    Write-Host "Generating compatibility report..." -ForegroundColor Cyan
+    $patchesPath = Join-Path $PSScriptRoot 'patches\patches.json'
+    Show-CompatibilityReport -SpotifyVersion $online -PatchesPath $patchesPath
+    
+    if (-not $test_mode) {
+        Write-Host "Use -test_mode with -compatibility_report to run without installing`n" -ForegroundColor Yellow
+    }
+}
+
+if ($test_mode) {
+    Write-Host "TEST MODE: Patches will be validated but not installed" -ForegroundColor Yellow
+    Write-Host
+}
+
+if ($preserve_exclusive_mode) {
+    Write-Host "Exclusive Mode audio settings will be preserved" -ForegroundColor Cyan
+}
+
+if ($enable_ai_features) {
+    Write-Host "AI-powered features (Prompted Playlists) will be enabled" -ForegroundColor Cyan
+}
+
+if ($enable_enhanced_lyrics) {
+    Write-Host "Enhanced lyrics features (offline, translation, previews) will be enabled" -ForegroundColor Cyan
+}
+
+if ($minimal_install) {
+    Write-Host "Minimal installation mode: Only essential patches will be applied" -ForegroundColor Yellow
+}
+
+# Check for Studio by Spotify
+$null = Test-StudioBySpotify
 
 # Check version Windows
 $os = Get-CimInstance -ClassName "Win32_OperatingSystem" -ErrorAction SilentlyContinue
