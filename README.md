@@ -5,7 +5,7 @@
 </p>
 
 <h1 align="center">SpotX</h1>
-<p align="center"><b>An Ad-Blocking & Theming Patcher for the Spotify Desktop Client on Windows</b></p>
+<p align="center"><b>An Ad-Blocking and Theming Patcher for the Spotify Desktop Client on Windows</b></p>
 
 <p align="center">
   <a href="https://t.me/spotify_windows_mod"><img src="https://spotx-official.github.io/images/shields/SpotX_Channel.svg" alt="Telegram Channel"></a>
@@ -20,6 +20,7 @@
   <a href="#installation--update">Installation</a> •
   <a href="#uninstall">Uninstall</a> •
   <a href="#faq">FAQ</a> •
+  <a href="#contributors">Contributors</a> •
   <a href="#disclaimer">Disclaimer</a>
 </p>
 
@@ -33,6 +34,7 @@
 - [Uninstall](#uninstall)
 - [FAQ](#faq)
 - [Community](#community)
+- [Contributors](#contributors)
 - [Disclaimer](#disclaimer)
 
 ---
@@ -49,12 +51,12 @@
 
 ## Features
 
-- 🚫 **Blocks banner, video, and audio ads** in the client, including newer ad formats (HTML display ads, in-player video ads, sponsored playlist placements)
-- 🎧 **Optionally hides** podcasts, episodes, and audiobooks from the homepage
-- 🔄 **Optionally blocks** automatic Spotify updates
-- 🎨 **Theme customization** — choose between the new and classic UI layouts
-- 🎤 **Custom lyrics color schemes** (28 options)
-- ⚙️ **Advanced installation options** — see [installation parameters](https://github.com/SpotX-Official/SpotX/discussions/60)
+- Blocks banner, video, and audio advertisements in the client, including newer ad formats (HTML display ads, in-player video ads, sponsored playlist placements)
+- Optionally hides podcasts, episodes, and audiobooks from the homepage
+- Optionally blocks automatic Spotify updates
+- Theme customization, with a choice between the new and classic UI layouts
+- Custom lyrics color schemes (28 options)
+- Advanced installation options — see [installation parameters](https://github.com/SpotX-Official/SpotX/discussions/60)
 
 ---
 
@@ -143,7 +145,7 @@ iex "& { $(iwr -useb 'https://spotx-official.github.io/SpotX/run.ps1') } -m -con
 <summary><b>Premium Installation</b></summary>
 <br>
 
-For Premium account holders — skips ad-blocking logic (not needed on paid accounts) and only reduces podcast audio ads.
+For Premium account holders. This option skips the ad-blocking logic, which is not needed on paid accounts, and only reduces podcast audio ads.
 
 **Option 1 — Download and run:**
 [Install_Prem.bat](https://raw.githack.com/amd64fox/SpotX/main/scripts/Install_Prem.bat)
@@ -190,15 +192,21 @@ Common questions and troubleshooting steps are covered in the [SpotX FAQ](https:
 
 | Platform | Link |
 |---|---|
-| 📢 Telegram Channel | [spotify_windows_mod](https://t.me/spotify_windows_mod) |
-| 💬 Telegram Community | [SpotxCommunity](https://t.me/SpotxCommunity) |
-| 🐧 macOS / Linux Version | [SpotX-Bash](https://github.com/SpotX-Official/SpotX-Bash) |
+| Telegram Channel | [spotify_windows_mod](https://t.me/spotify_windows_mod) |
+| Telegram Community | [SpotxCommunity](https://t.me/SpotxCommunity) |
+| macOS / Linux Version | [SpotX-Bash](https://github.com/SpotX-Official/SpotX-Bash) |
 
 ---
-## Author
-William Law.
-https://willx.tech
+
+## Contributors
+
+| Name | Role | Portfolio |
+|---|---|---|
+| William Law | Author / Maintainer | [willx.tech](https://willx.tech/) |
+| William | Contributor | [willx.tech](https://willx.tech/) |
+
+---
 
 ## Disclaimer
 
-SpotX modifies the official Spotify desktop client and is provided **as-is**, for evaluation purposes, without warranty of any kind. Use it at your own risk, and be aware that it may conflict with Spotify's Terms of Service.
+SpotX modifies the official Spotify desktop client and is provided as-is, for evaluation purposes, without warranty of any kind. Use it at your own risk, and be aware that it may conflict with Spotify's Terms of Service.
