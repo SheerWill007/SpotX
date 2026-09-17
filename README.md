@@ -200,9 +200,9 @@ Common questions and troubleshooting steps are covered in the [SpotX FAQ](https:
 
 ## Contributors
 
-| Name | Role | Portfolio |
+| Name | Role | Web Links |
 |---|---|---|
-| William Law | Author / Maintainer | [willx.tech](https://willx.tech/) |
+| Community | Author  | [Com link to GitHub](https://github.com/SpotX-Official/SpotX) |
 | William | Contributor | [willx.tech](https://willx.tech/) |
 
 ---
